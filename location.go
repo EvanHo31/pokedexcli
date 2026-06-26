@@ -19,7 +19,20 @@ type pokeLocations struct {
 	Results  []pokeLocationResults `json:"results"`
 }
 
-func getLocations(url string) (pokeLocations, error) {
+func getLocations(config *cmdConfig, option string) (pokeLocations, error) {
+	url := ""
+	switch option {
+	case "next":
+		url = config.Next
+	case "previous":
+		url = config.Previous
+	}
+	// check cache
+	cache, ok := config.Cache.Get(url)
+	if ok {
+		return decodeLocation(cache)
+	}
+	// make get request
 	res, err := http.Get(url)
 	if err != nil {
 		return pokeLocations{}, err
@@ -32,6 +45,8 @@ func getLocations(url string) (pokeLocations, error) {
 	if err != nil {
 		return pokeLocations{}, err
 	}
+	// store cache
+	config.Cache.Add(url, buf)
 	return decodeLocation(buf)
 }
 

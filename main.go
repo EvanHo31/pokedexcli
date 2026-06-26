@@ -4,13 +4,18 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"time"
+
+	"github.com/EvanHo31/pokecache"
 )
 
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
+	cache := pokecache.NewCache(5 * time.Second)
 	config := cmdConfig{
 		Previous: "",
 		Next:     "https://pokeapi.co/api/v2/location-area?offset=0&limit=20",
+		Cache:    &cache,
 	}
 	for {
 		fmt.Print("Pokedex > ")

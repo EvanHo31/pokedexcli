@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+
+	"github.com/EvanHo31/pokecache"
 )
 
 type cliCommand struct {
@@ -14,6 +16,7 @@ type cliCommand struct {
 type cmdConfig struct {
 	Previous string
 	Next     string
+	Cache    *pokecache.Cache
 }
 
 func getCommand() map[string]cliCommand {
@@ -61,7 +64,7 @@ func commandMap(config *cmdConfig) error {
 	if config.Next == "" {
 		return fmt.Errorf("you are on the last page")
 	}
-	locations, err := getLocations(config.Next)
+	locations, err := getLocations(config, "next")
 	if err != nil {
 		return err
 	}
@@ -75,7 +78,7 @@ func commandMapB(config *cmdConfig) error {
 	if config.Previous == "" {
 		return fmt.Errorf("you are on the first page")
 	}
-	locations, err := getLocations(config.Previous)
+	locations, err := getLocations(config, "previous")
 	if err != nil {
 		return err
 	}
