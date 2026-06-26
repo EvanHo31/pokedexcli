@@ -6,45 +6,12 @@ import (
 	"os"
 )
 
-type cliCommand struct {
-	name        string
-	description string
-	callback    func() error
-}
-
-func getCommand() map[string]cliCommand {
-	var commandMap = map[string]cliCommand{
-		"help": {
-			name:        "help",
-			description: "Displays a help message",
-			callback:    commandHelp,
-		},
-		"exit": {
-			name:        "exit",
-			description: "Exit the Pokedex",
-			callback:    commandExit,
-		},
-	}
-	return commandMap
-}
-
-func commandExit() error {
-	fmt.Println("Closing the Pokedex... Goodbye!")
-	os.Exit(0)
-	return nil
-}
-
-func commandHelp() error {
-	fmt.Print("\nWelcome to the Pokedex!\nUsage:\n\n")
-	for _, cmd := range getCommand() {
-		fmt.Printf("%s: %s\n", cmd.name, cmd.description)
-	}
-	fmt.Println("-----------------------")
-	return nil
-}
-
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
+	config := cmdConfig{
+		Previous: "",
+		Next:     "https://pokeapi.co/api/v2/location-area?offset=0&limit=20",
+	}
 	for {
 		fmt.Print("Pokedex > ")
 		scanner.Scan()
@@ -63,7 +30,7 @@ func main() {
 			fmt.Println("Unknown command")
 			continue
 		}
-		err := cmd.callback()
+		err := cmd.callback(&config)
 		if err != nil {
 			fmt.Printf("error running command %s: %v\n", cmd.name, err)
 		}
