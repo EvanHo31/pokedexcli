@@ -9,7 +9,8 @@ import (
 func main() {
 	client := pokeapi.Newclient(10*time.Second, 5*time.Second)
 	cfg := cmdConfig{
-		client: &client,
+		client:  &client,
+		pokedex: map[string]Pokemon{},
 	}
 	startREPL(&cfg)
 }

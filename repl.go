@@ -9,10 +9,21 @@ import (
 	"github.com/EvanHo31/pokedexcli/internal/pokeapi"
 )
 
+type Pokemon struct {
+	Id              int      `json:"id"`
+	Name            string   `json:"name"`
+	Base_experience int      `json:"base_experience"`
+	Height          int      `json:"height"`
+	Weight          int      `json:"weight"`
+	Stats           []string `json:"stats"`
+	Types           []string `json:"types"`
+}
+
 type cmdConfig struct {
 	Previous string
 	Next     string
 	client   *pokeapi.Client
+	pokedex  map[string]Pokemon
 }
 
 type cliCommand struct {
@@ -47,6 +58,11 @@ func getCommand() map[string]cliCommand {
 			name:        "explore",
 			description: "take a location-area name and list all the Pokemon located there",
 			callback:    commandExplore,
+		},
+		"catch": {
+			name:        "catch",
+			description: "try to catch a pokemon",
+			callback:    commandCatch,
 		},
 	}
 	return commandMap
