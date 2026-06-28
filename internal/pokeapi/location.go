@@ -1,10 +1,9 @@
-package main
+package pokeapi
 
 import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"net/http"
 )
 
 type pokeLocationResults struct {
@@ -19,26 +18,22 @@ type pokeLocations struct {
 	Results  []pokeLocationResults `json:"results"`
 }
 
-func getLocations(config *cmdConfig, option string) (pokeLocations, error) {
-	url := ""
-	switch option {
-	case "next":
-		url = config.Next
-	case "previous":
-		url = config.Previous
+func (c *Client) GetLocations(url string) (pokeLocations, error) {
+	if url == "" {
+		url = baseURL + "/location"
 	}
 	// check cache
-	cache, ok := config.Cache.Get(url)
+	cache, ok := c.Cache.Get(url)
 	if ok {
 		return decodeLocation(cache)
 	}
 	// make get request
-	res, err := http.Get(url)
+	res, err := c.HttpClient.Get(url)
 	if err != nil {
 		return pokeLocations{}, err
 	}
 	if res.StatusCode < 200 || res.StatusCode > 299 {
-		return pokeLocations{}, fmt.Errorf("non-ok response - %s", res.Status)
+		return pokeLocations{}, fmt.Errorf("non-ok response - %s [%s]", res.Status, url)
 	}
 	defer res.Body.Close()
 	buf, err := io.ReadAll(res.Body)
@@ -46,8 +41,12 @@ func getLocations(config *cmdConfig, option string) (pokeLocations, error) {
 		return pokeLocations{}, err
 	}
 	// store cache
-	config.Cache.Add(url, buf)
-	return decodeLocation(buf)
+	c.Cache.Add(url, buf)
+	loc, err := decodeLocation(buf)
+	if err != nil {
+		return pokeLocations{}, err
+	}
+	return loc, nil
 }
 
 func decodeLocation(buf []byte) (pokeLocations, error) {
@@ -57,10 +56,4 @@ func decodeLocation(buf []byte) (pokeLocations, error) {
 		return pokeLocations{}, err
 	}
 	return locations, nil
-}
-
-func printLocations(r []pokeLocationResults) {
-	for _, location := range r {
-		fmt.Println(location.Name)
-	}
 }

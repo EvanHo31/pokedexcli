@@ -3,20 +3,12 @@ package main
 import (
 	"fmt"
 	"os"
-
-	"github.com/EvanHo31/pokecache"
 )
 
 type cliCommand struct {
 	name        string
 	description string
 	callback    func(*cmdConfig) error
-}
-
-type cmdConfig struct {
-	Previous string
-	Next     string
-	Cache    *pokecache.Cache
 }
 
 func getCommand() map[string]cliCommand {
@@ -45,13 +37,13 @@ func getCommand() map[string]cliCommand {
 	return commandMap
 }
 
-func commandExit(config *cmdConfig) error {
+func commandExit(cfg *cmdConfig) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
 }
 
-func commandHelp(config *cmdConfig) error {
+func commandHelp(cfg *cmdConfig) error {
 	fmt.Print("\nWelcome to the Pokedex!\nUsage:\n\n")
 	for _, cmd := range getCommand() {
 		fmt.Printf("%s: %s\n", cmd.name, cmd.description)
@@ -60,30 +52,31 @@ func commandHelp(config *cmdConfig) error {
 	return nil
 }
 
-func commandMap(config *cmdConfig) error {
-	if config.Next == "" {
-		return fmt.Errorf("you are on the last page")
-	}
-	locations, err := getLocations(config, "next")
+func commandMap(cfg *cmdConfig) error {
+	locations, err := cfg.client.GetLocations(cfg.Next)
 	if err != nil {
 		return err
 	}
-	config.Next = locations.Next
-	config.Previous = locations.Previous
-	printLocations(locations.Results)
+	cfg.Next = locations.Next
+	cfg.Previous = locations.Previous
+	for _, location := range locations.Results {
+		fmt.Println(location.Name)
+	}
 	return nil
 }
 
-func commandMapB(config *cmdConfig) error {
-	if config.Previous == "" {
+func commandMapB(cfg *cmdConfig) error {
+	if cfg.Previous == "" {
 		return fmt.Errorf("you are on the first page")
 	}
-	locations, err := getLocations(config, "previous")
+	locations, err := cfg.client.GetLocations(cfg.Previous)
 	if err != nil {
 		return err
 	}
-	config.Next = locations.Next
-	config.Previous = locations.Previous
-	printLocations(locations.Results)
+	cfg.Next = locations.Next
+	cfg.Previous = locations.Previous
+	for _, location := range locations.Results {
+		fmt.Println(location.Name)
+	}
 	return nil
 }
