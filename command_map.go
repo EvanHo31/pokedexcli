@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func commandMap(cfg *cmdConfig) error {
+func commandMap(cfg *cmdConfig, args []string) error {
 	locations, err := cfg.client.GetLocations(cfg.Next)
 	if err != nil {
 		return err
@@ -15,7 +15,7 @@ func commandMap(cfg *cmdConfig) error {
 	return nil
 }
 
-func commandMapB(cfg *cmdConfig) error {
+func commandMapB(cfg *cmdConfig, args []string) error {
 	if cfg.Previous == "" {
 		return fmt.Errorf("you are on the first page")
 	}
