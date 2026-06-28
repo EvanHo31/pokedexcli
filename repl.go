@@ -15,6 +15,38 @@ type cmdConfig struct {
 	client   *pokeapi.Client
 }
 
+type cliCommand struct {
+	name        string
+	description string
+	callback    func(*cmdConfig) error
+}
+
+func getCommand() map[string]cliCommand {
+	var commandMap = map[string]cliCommand{
+		"help": {
+			name:        "help",
+			description: "Displays a help message",
+			callback:    commandHelp,
+		},
+		"exit": {
+			name:        "exit",
+			description: "Exit the Pokedex",
+			callback:    commandExit,
+		},
+		"map": {
+			name:        "map",
+			description: "display the names of 20 location areas in the Pokemon world",
+			callback:    commandMap,
+		},
+		"mapb": {
+			name:        "mapb",
+			description: "display the previous names of 20 location areas in the Pokemon world",
+			callback:    commandMapB,
+		},
+	}
+	return commandMap
+}
+
 func cleanInput(text string) []string {
 	lowered := strings.ToLower(text)
 	cleaned := strings.Fields(lowered)
