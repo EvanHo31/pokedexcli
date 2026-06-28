@@ -18,7 +18,7 @@ type cmdConfig struct {
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*cmdConfig) error
+	callback    func(*cmdConfig, []string) error
 }
 
 func getCommand() map[string]cliCommand {
@@ -42,6 +42,11 @@ func getCommand() map[string]cliCommand {
 			name:        "mapb",
 			description: "display the previous names of 20 location areas in the Pokemon world",
 			callback:    commandMapB,
+		},
+		"explore": {
+			name:        "explore",
+			description: "take a location-area name and list all the Pokemon located there",
+			callback:    commandExplore,
 		},
 	}
 	return commandMap
@@ -73,7 +78,7 @@ func startREPL(cfg *cmdConfig) {
 			fmt.Println("Unknown command")
 			continue
 		}
-		err := cmd.callback(cfg)
+		err := cmd.callback(cfg, cleaned_input[1:])
 		if err != nil {
 			fmt.Printf("error running command %s: %v\n", cmd.name, err)
 		}
