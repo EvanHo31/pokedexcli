@@ -21,6 +21,22 @@ type pokeDetails struct {
 	Types           []pokeType `json:"types"`
 }
 
+func (p pokeDetails) GetStats() map[string]int {
+	stats := map[string]int{}
+	for _, stat := range p.Stats {
+		stats[stat.Stat.Name] = stat.Base_stat
+	}
+	return stats
+}
+
+func (p pokeDetails) GetTypes() []string {
+	types := []string{}
+	for _, t := range p.Types {
+		types = append(types, t.Type.Name)
+	}
+	return types
+}
+
 func (c *Client) GetPokemonStats(name string) (pokeDetails, error) {
 	url := baseURL + "/pokemon/" + name
 	cache, ok := c.Cache.Get(url)

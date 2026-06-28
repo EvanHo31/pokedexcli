@@ -25,6 +25,8 @@ func commandCatch(cfg *cmdConfig, args []string) error {
 			Height:          pokemon.Height,
 			Weight:          pokemon.Weight,
 			Base_experience: pokemon.Base_experience,
+			Stats:           pokemon.GetStats(),
+			Types:           pokemon.GetTypes(),
 		}
 	} else {
 		fmt.Printf("%s escaped!\n", pokemon.Name)

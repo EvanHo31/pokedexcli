@@ -10,13 +10,13 @@ import (
 )
 
 type Pokemon struct {
-	Id              int      `json:"id"`
-	Name            string   `json:"name"`
-	Base_experience int      `json:"base_experience"`
-	Height          int      `json:"height"`
-	Weight          int      `json:"weight"`
-	Stats           []string `json:"stats"`
-	Types           []string `json:"types"`
+	Id              int            `json:"id"`
+	Name            string         `json:"name"`
+	Base_experience int            `json:"base_experience"`
+	Height          int            `json:"height"`
+	Weight          int            `json:"weight"`
+	Stats           map[string]int `json:"stats"`
+	Types           []string       `json:"types"`
 }
 
 type cmdConfig struct {
